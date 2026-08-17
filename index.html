@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Siya Dixit — Portfolio</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+    background: #fafafa;
+    color: #1a1a1a;
+    line-height: 1.6;
+  }
+  header {
+    padding: 60px 24px 40px;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+  h1 {
+    font-size: 2rem;
+    margin-bottom: 8px;
+  }
+  .subtitle {
+    color: #666;
+    font-size: 1.1rem;
+    margin-bottom: 0;
+  }
+  main {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 0 24px 80px;
+  }
+  .project {
+    background: #fff;
+    border: 1px solid #e5e5e5;
+    border-radius: 12px;
+    padding: 32px;
+    margin-top: 32px;
+  }
+  .project h2 {
+    margin-top: 0;
+    font-size: 1.4rem;
+  }
+  .tag {
+    display: inline-block;
+    background: #f0f0f0;
+    color: #444;
+    font-size: 0.8rem;
+    padding: 4px 10px;
+    border-radius: 999px;
+    margin-right: 6px;
+    margin-bottom: 12px;
+  }
+  .finding {
+    background: #fef8ec;
+    border-left: 3px solid #e8a33d;
+    padding: 16px 20px;
+    border-radius: 4px;
+    margin: 20px 0;
+    font-size: 0.95rem;
+  }
+  .finding strong { display: block; margin-bottom: 6px; }
+  iframe {
+    width: 100%;
+    height: 950px;
+    border: 1px solid #e5e5e5;
+    border-radius: 8px;
+    margin-top: 20px;
+  }
+  ul { padding-left: 20px; }
+  li { margin-bottom: 6px; }
+  footer {
+    text-align: center;
+    color: #999;
+    font-size: 0.85rem;
+    padding: 20px;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Siya Dixit</h1>
+  <p class="subtitle">Data-driven projects at the intersection of business, fashion, and beauty</p>
+</header>
+
+<main>
+  <div class="project">
+    <span class="tag">Machine Learning</span>
+    <span class="tag">Python / scikit-learn</span>
+    <span class="tag">Beauty Retail</span>
+
+    <h2>Sephora Beauty Product Pricing Model</h2>
+    <p>
+      A Gradient Boosting model trained on ~7,800 real Sephora products to predict a
+      "fair" price based on measurable attributes — category, size, formula complexity,
+      brand, and popularity signals. The goal: understand how much of beauty product
+      pricing is explained by measurable product substance versus intangible brand equity.
+    </p>
+
+    <div class="finding">
+      <strong>Key finding</strong>
+      Even after controlling for brand identity, the model systematically underestimates
+      prices for top-tier prestige brands (La Mer, SK-II, Guerlain, and others) — and the
+      gap grows with price: products under $50 track close to predicted price, while
+      products over $200 are priced on average 177% above what formula, size, and category
+      alone would predict. This suggests brand equity and positioning — not product
+      substance — become the dominant price driver in the luxury tier.
+    </div>
+
+    <p><strong>Try it yourself below</strong> — pick a real product to see how its actual
+    price compares to the model's prediction, or enter a hypothetical product's attributes
+    to get a data-driven price recommendation.</p>
+
+    <iframe
+      src="https://siyadixit-sephora-pricing-model.hf.space"
+      title="Sephora Pricing Model"
+      loading="lazy">
+    </iframe>
+  </div>
+</main>
+
+<footer>
+  Built by Siya Dixit
+</footer>
+
+</body>
+</html>
