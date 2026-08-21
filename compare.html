@@ -1,0 +1,1120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Compare — Rouge</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:wght@300;400&family=Playfair+Display:ital,wght@0,600;1,500&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+    --bg: #F3EEE8;
+    --ink: #171113;
+    --ink-soft: #817477;
+    --accent: #861B32;
+    --good: #80683D;
+    --glass: rgba(255, 255, 255, 0.55);
+    --glass-border: rgba(255, 255, 255, 0.7);
+}
+
+* { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-weight: 400;
+    overflow-x: hidden;
+    position: relative;
+}
+
+.intro-screen {
+    position: fixed;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    background: #24131A;
+    color: var(--bg);
+    z-index: 200;
+    pointer-events: none;
+    animation: intro-exit 1.2s cubic-bezier(0.76, 0, 0.24, 1) forwards;
+}
+.intro-mark {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    font-family: 'Bodoni Moda', serif;
+    font-size: 12px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    animation: intro-mark 0.8s ease-out both;
+}
+.intro-mark::before { content: ""; width: 34px; height: 1px; background: var(--accent); }
+.intro-loader { position: relative; z-index: 2; width: min(360px, 68vw); text-align: center; filter: blur(13px); transform: scale(0.96); animation: spotlight-focus 0.85s 0.14s ease-out forwards; }
+.intro-loader .intro-mark { justify-content: center; font-size: clamp(18px, 3vw, 26px); letter-spacing: 7px; }
+.intro-loader .intro-mark::before { display: none; }
+.intro-caption { display: block; margin-top: 16px; color: rgba(243, 238, 232, 0.7); font-family: 'Inter', sans-serif; font-size: 9px; letter-spacing: 2.4px; text-transform: uppercase; opacity: 0; animation: loader-caption 0.45s 0.38s ease-out forwards; }
+.intro-progress { height: 2px; margin-top: 30px; background: rgba(243, 238, 232, 0.22); overflow: hidden; }
+.intro-progress span { display: block; width: 100%; height: 100%; background: var(--accent); transform: translateX(-100%); animation: loader-progress 1.05s 0.18s cubic-bezier(0.76, 0, 0.24, 1) forwards; }
+.intro-screen::before { content: ""; position: absolute; inset: -25% -35%; background: radial-gradient(ellipse 18% 85% at 0% 50%, rgba(255, 246, 231, 0.95) 0%, rgba(211, 153, 116, 0.45) 28%, transparent 72%); filter: blur(18px); animation: spotlight-sweep 1.2s cubic-bezier(0.76, 0, 0.24, 1) forwards; }
+.intro-lipstick {
+    position: absolute;
+    z-index: 1;
+    width: 144px;
+    height: auto;
+    left: -180px;
+    top: 50%;
+    transform: translateY(-50%) rotate(-9deg);
+    mix-blend-mode: multiply;
+    animation: lipstick-sweep 1.2s cubic-bezier(0.76, 0, 0.24, 1) both;
+}
+.intro-line {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 50%;
+    height: 1px;
+    background: var(--accent);
+    transform: scaleX(0);
+    transform-origin: left;
+    animation: line-draw 0.9s 0.1s cubic-bezier(0.76, 0, 0.24, 1) forwards;
+}
+@keyframes intro-mark {
+    from { opacity: 0; transform: translateY(10px); letter-spacing: 8px; }
+    to { opacity: 1; transform: translateY(0); letter-spacing: 4px; }
+}
+@keyframes intro-exit {
+    0%, 68% { opacity: 1; visibility: visible; }
+    100% { opacity: 0; visibility: hidden; }
+}
+@keyframes lipstick-sweep {
+    0% { left: -180px; }
+    100% { left: calc(100% + 40px); }
+}
+@keyframes line-draw { to { transform: scaleX(1); } }
+@keyframes loader-caption { to { opacity: 1; } }
+@keyframes loader-progress { to { transform: translateX(0); } }
+@keyframes spotlight-sweep { to { transform: translateX(115%); } }
+@keyframes spotlight-focus { to { filter: blur(0); transform: scale(1); } }
+
+body::before, body::after {
+    content: "";
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(90px);
+    z-index: 0;
+    pointer-events: none;
+}
+body::before { width: 480px; height: 480px; background: rgba(228, 0, 43, 0.13); top: -120px; right: -100px; }
+body::after { width: 420px; height: 420px; background: rgba(228, 0, 43, 0.08); bottom: 10%; left: -140px; }
+
+.parallax-word, .parallax-rule {
+    position: fixed;
+    pointer-events: none;
+    z-index: 0;
+    user-select: none;
+    will-change: transform;
+}
+.parallax-word {
+    top: auto;
+    bottom: 8vh;
+    right: 0.02em;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    color: rgba(17, 16, 15, 0.045);
+    font-family: 'Bodoni Moda', serif;
+    font-size: clamp(74px, 15vw, 190px);
+    line-height: 0.7;
+    letter-spacing: -0.06em;
+    transform: translate3d(0, var(--parallax-y, 0px), 0);
+}
+.parallax-word span:nth-child(2) {
+    align-self: flex-end;
+    margin-right: 0.18em;
+}
+.parallax-rule {
+    top: 0;
+    bottom: 0;
+    left: 12%;
+    width: 1px;
+    background: var(--accent);
+    opacity: 0.3;
+    transform: translate3d(0, var(--parallax-rule-y, 0px), 0);
+}
+
+h1, h2, h3 {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-style: italic;
+    font-weight: 600;
+    margin: 0;
+}
+
+.wrap { max-width: 900px; margin: 0 auto; padding: 0 24px; position: relative; z-index: 1; }
+
+.nav-bar {
+    position: sticky;
+    top: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 24px;
+    margin: 0 0 50px 0;
+    background: rgba(244, 240, 235, 0.94);
+    border-bottom: none;
+    z-index: 100;
+}
+.nav-logo {
+    font-family: 'Bodoni Moda', serif;
+    font-weight: 300;
+    font-size: 25px;
+    color: var(--ink);
+    letter-spacing: 4px;
+}
+.nav-links { display: flex; gap: 8px; }
+.nav-link {
+    font-size: 12px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--ink-soft);
+    text-decoration: none;
+    padding: 8px 16px;
+    border-radius: 0;
+    transition: color 0.2s ease, background 0.2s ease;
+}
+.nav-link.active, .nav-link:hover { color: var(--ink); background: rgba(28, 26, 23, 0.06); }
+
+*, *::before, *::after { border: none !important; }
+
+.value-row, .product-card, .shared-section, .unique-column {
+    background: rgba(255, 255, 255, 0.42);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    border-color: rgba(17, 16, 15, 0.24);
+    border-radius: 0;
+    box-shadow: none;
+}
+
+.compare-hero { padding-top: 34px; margin-bottom: 76px; }
+.compare-hero h1 {
+    max-width: 660px;
+    font-size: clamp(42px, 7vw, 78px);
+    line-height: 0.96;
+    font-style: normal;
+    font-weight: 300;
+}
+.compare-hero h1 em { color: var(--accent); }
+.hero-kicker {
+    color: var(--accent);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 2.2px;
+    text-transform: uppercase;
+    margin-bottom: 18px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .intro-screen, .intro-mark, .intro-lipstick, .intro-line, .intro-caption, .intro-progress span, .intro-loader, .intro-screen::before, .reveal { animation: none; transition: none; }
+    .intro-screen { display: none; }
+    .reveal { opacity: 1; transform: none; }
+}
+
+section { position: relative; margin-bottom: 64px; padding: 0 24px; }
+
+.section-heading {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 27px;
+    font-style: italic;
+    font-weight: 600;
+    letter-spacing: 0.2px;
+    margin-bottom: 8px;
+}
+.section-sub {
+    color: var(--ink-soft);
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 14px;
+    font-style: italic;
+    line-height: 1.55;
+    margin-bottom: 24px;
+    max-width: 500px;
+}
+
+.reveal {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1), transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.reveal.visible { opacity: 1; transform: translateY(0); }
+
+.row-list { display: flex; flex-direction: column; gap: 10px; }
+.value-row {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 16px 20px;
+    background: var(--glass);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid var(--glass-border);
+    border-radius: 18px;
+    box-shadow: 0 4px 20px rgba(28, 26, 23, 0.05);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.value-row:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(228, 0, 43, 0.10); }
+
+.row-main { flex: 2; min-width: 0; }
+.row-name { font-family: 'Playfair Display', serif; font-weight: 700; font-size: 15px; }
+.row-name a, .product-name a { color: inherit; text-decoration: none; }
+.row-name a:hover, .product-name a:hover { color: var(--accent); }
+.row-meta { font-size: 12px; color: var(--ink-soft); margin-top: 3px; }
+.row-price { flex: 0 0 100px; text-align: right; }
+.row-price-main { font-size: 15px; font-weight: 600; }
+
+.loading-note, .empty-note { color: var(--ink-soft); font-size: 13px; padding: 12px 4px; font-style: italic; }
+
+.search-box { position: relative; margin-bottom: 20px; max-width: 720px; }
+.search-input {
+    width: 100%;
+    padding: 18px 22px;
+    font-family: 'Inter', sans-serif;
+    font-size: 19px;
+    border: 5px solid rgba(214, 77, 88, 0.22) !important;
+    border-radius: 48px;
+    background: rgba(255, 255, 255, 0.45);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    color: var(--ink);
+    outline: none;
+    transition: box-shadow 0.2s ease;
+}
+.search-input:focus { box-shadow: 0 0 0 3px rgba(134, 27, 50, 0.12); }
+.search-results {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0; right: 0;
+    background: rgba(255, 255, 255, 0.94);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    border: none !important;
+    border-radius: 0 0 18px 18px;
+    max-height: 260px;
+    overflow-y: auto;
+    z-index: 50;
+    display: none;
+    box-shadow: 0 8px 30px rgba(28, 26, 23, 0.10);
+}
+.search-results.open { display: block; }
+.search-result-item { padding: 12px 18px; font-size: 13px; cursor: pointer; border-radius: 12px; margin: 4px; transition: background 0.15s ease; }
+.search-result-item:hover { background: rgba(228, 0, 43, 0.06); }
+.search-result-item .sr-brand { color: var(--ink-soft); font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+.btn {
+    background: var(--accent);
+    color: #FFFFFF;
+    border: none;
+    padding: 14px 28px;
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    border-radius: 24px;
+    cursor: pointer;
+    box-shadow: 0 4px 18px rgba(228, 0, 43, 0.30);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(228, 0, 43, 0.40); }
+.btn:disabled { background: #D8D2CA; color: #FFFFFF; cursor: not-allowed; box-shadow: none; transform: none; }
+
+.filters-row { display: flex; gap: 14px; margin-bottom: 20px; flex-wrap: wrap; align-items: flex-end; }
+.filter-field label { display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 0.8px; color: var(--ink-soft); margin-bottom: 6px; }
+.filter-field select, .filter-field input[type="range"] {
+    font-family: 'Inter', sans-serif;
+    padding: 10px 14px;
+    border: 1px solid var(--glass-border);
+    border-radius: 14px;
+    background: var(--glass);
+    backdrop-filter: blur(16px);
+}
+
+.cards-row { display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 24px; }
+.product-card {
+    background: var(--glass);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid var(--glass-border);
+    border-radius: 18px;
+    box-shadow: 0 4px 20px rgba(28, 26, 23, 0.05);
+    padding: 20px;
+    flex: 1;
+    min-width: 220px;
+}
+.product-brand { font-size: 10px; text-transform: uppercase; letter-spacing: 1.2px; color: var(--ink-soft); }
+.product-name { font-family: 'Playfair Display', serif; font-weight: 700; font-size: 17px; margin: 4px 0 14px 0; }
+.stat-row { display: flex; justify-content: space-between; padding: 7px 0; border-top: 1px solid rgba(28,26,23,0.06); font-size: 13px; }
+.stat-row span { color: var(--ink-soft); }
+.stat-row strong { font-weight: 600; }
+
+.section-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 1.2px; color: var(--ink-soft); margin: 22px 0 12px 0; }
+.shared-section {
+    background: var(--glass);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid var(--glass-border);
+    border-radius: 18px;
+    box-shadow: 0 4px 20px rgba(28, 26, 23, 0.05);
+    padding: 20px;
+    margin-bottom: 20px;
+}
+.tag-row { display: flex; flex-wrap: wrap; gap: 8px; }
+.shared-tag {
+    background: rgba(228, 0, 43, 0.08);
+    color: var(--accent);
+    border: 1px solid rgba(228, 0, 43, 0.25);
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 500;
+}
+
+.unique-grid { display: flex; gap: 14px; flex-wrap: wrap; }
+.unique-column {
+    background: var(--glass);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid var(--glass-border);
+    border-radius: 18px;
+    box-shadow: 0 4px 20px rgba(28, 26, 23, 0.05);
+    padding: 18px;
+    flex: 1;
+    min-width: 240px;
+}
+.unique-header { font-family: 'Playfair Display', serif; font-style: italic; font-weight: 700; color: var(--accent); margin-bottom: 12px; font-size: 15px; }
+.ingredient-row { display: flex; justify-content: space-between; gap: 12px; padding: 7px 0; border-top: 1px solid rgba(28,26,23,0.06); font-size: 12px; }
+.ing-name { font-weight: 500; flex-shrink: 0; }
+.ing-fn { color: var(--ink-soft); text-align: right; }
+
+.row-select { flex: 0 0 22px; }
+.row-select input { width: 17px; height: 17px; accent-color: var(--accent); cursor: pointer; }
+.row-sim { flex: 0 0 130px; }
+.sim-bar-bg { width: 100%; height: 4px; background: rgba(28,26,23,0.08); border-radius: 4px; overflow: hidden; }
+.sim-bar-fill { height: 100%; background: var(--accent); border-radius: 4px; transition: width 0.4s ease; }
+.sim-pct { font-size: 10px; color: var(--ink-soft); text-align: right; margin-top: 4px; }
+
+.selected-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; min-height: 20px; }
+.compare-picker {
+    width: min(100%, 560px);
+    margin: 4px 0 20px;
+}
+.compare-picker label {
+    display: block;
+    color: var(--ink-soft);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+}
+.compare-picker select {
+    width: 100%;
+    min-height: 48px;
+    padding: 12px 14px;
+    background: rgba(255, 255, 255, 0.42);
+    color: var(--ink);
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 14px;
+}
+.compare-picker select:focus { outline: 2px solid var(--accent); outline-offset: 3px; }
+.compare-picker-toggle { display: flex; align-items: center; justify-content: space-between; width: 100%; padding: 14px 16px; background: rgba(255, 255, 255, 0.42); color: var(--ink); cursor: pointer; font-family: 'Playfair Display', Georgia, serif; font-size: 15px; text-align: left; }
+.compare-picker-toggle::after { content: "⌄"; color: var(--accent); font-family: 'Inter', sans-serif; font-size: 18px; }
+.compare-picker-toggle[aria-expanded="true"]::after { content: "⌃"; }
+.compare-picker-count { color: var(--accent); font-family: 'Inter', sans-serif; font-size: 10px; letter-spacing: 1px; text-transform: uppercase; }
+.compare-picker-menu { display: none; max-height: 260px; overflow-y: auto; margin-top: 4px; background: rgba(255, 255, 255, 0.72); box-shadow: 0 12px 28px rgba(38, 18, 27, 0.08); }
+.compare-picker-menu.open { display: block; }
+.compare-picker-search { width: 100%; margin: 0 0 8px; padding: 13px 14px; background: rgba(255, 255, 255, 0.42); color: var(--ink); font-family: 'Inter', sans-serif; font-size: 13px; outline: none; }
+.compare-picker-search::placeholder { color: var(--ink-soft); }
+.compare-picker-match-count { display: block; margin: 0 0 8px; color: var(--ink-soft); font-size: 11px; }
+.compare-option { display: flex; align-items: center; gap: 12px; padding: 11px 14px; cursor: pointer; font-family: 'Playfair Display', Georgia, serif; font-size: 14px; }
+.compare-option:hover { background: rgba(134, 27, 50, 0.08); }
+.compare-option input { width: 16px; height: 16px; accent-color: var(--accent); }
+.selected-chip {
+    background: var(--ink); color: #FFFFFF; padding: 7px 14px; border-radius: 18px; font-size: 12px;
+    display: flex; align-items: center; gap: 8px;
+}
+.selected-chip .remove { cursor: pointer; opacity: 0.7; }
+.selected-chip .remove:hover { opacity: 1; }
+
+footer { text-align: center; padding: 40px 24px; color: var(--ink-soft); font-size: 12px; }
+
+/* GSAP takes over the compare hero reveal */
+.compare-hero h1.reveal { opacity: 1; transform: none; transition: none; }
+
+/* Marquee band */
+.marquee {
+    overflow: hidden;
+    white-space: nowrap;
+    padding: 18px 0;
+    margin: 0 -24px 64px;
+    border-top: 1px solid rgba(17,16,15,0.18) !important;
+    border-bottom: 1px solid rgba(17,16,15,0.18) !important;
+}
+.marquee-track { display: inline-flex; will-change: transform; }
+.marquee-track span {
+    font-family: 'Bodoni Moda', serif;
+    font-size: 13px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    padding-right: 48px;
+}
+.marquee-track span em { color: var(--accent); font-style: normal; }
+
+/* --- New GSAP intro --- */
+.intro2 {
+    position: fixed;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    background: #24131A;
+    z-index: 200;
+    pointer-events: none;
+}
+.intro2-inner { text-align: center; }
+.intro2-word {
+    font-family: 'Bodoni Moda', serif;
+    font-weight: 300;
+    font-size: clamp(44px, 9vw, 110px);
+    letter-spacing: 0.32em;
+    padding-left: 0.32em;
+    color: var(--bg);
+    line-height: 1;
+}
+.intro2-rule {
+    width: 0;
+    height: 1px;
+    margin: 26px auto 18px;
+    background: var(--accent);
+}
+.intro2-caption {
+    font-family: 'Inter', sans-serif;
+    font-size: 9px;
+    letter-spacing: 2.6px;
+    text-transform: uppercase;
+    color: rgba(243, 238, 232, 0.55);
+    opacity: 0;
+}
+.intro2-counter {
+    position: absolute;
+    bottom: 24px;
+    right: 40px;
+    font-family: 'Bodoni Moda', serif;
+    font-style: italic;
+    font-weight: 300;
+    font-size: clamp(64px, 12vw, 150px);
+    color: rgba(243, 238, 232, 0.09);
+    line-height: 1;
+}
+@media (prefers-reduced-motion: reduce) { .intro2 { display: none; } }
+
+/* --- Seamless nav (no hard edge) --- */
+.nav-bar {
+    background: linear-gradient(to bottom, var(--bg) 62%, rgba(243, 238, 232, 0)) !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding-bottom: 26px;
+}
+
+/* --- Cooler nav links: underline grows in --- */
+.nav-link { position: relative; padding: 8px 4px; margin: 0 10px; }
+.nav-link:hover { background: transparent !important; }
+.nav-link::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: 2px;
+    height: 1px;
+    width: 100%;
+    background: var(--accent) !important;
+    border: none !important;
+    transform: scaleX(0);
+    transform-origin: right;
+    transition: transform 0.35s cubic-bezier(0.76, 0, 0.24, 1);
+}
+.nav-link:hover::after, .nav-link.active::after { transform: scaleX(1); transform-origin: left; }
+
+/* --- Cooler buttons: editorial fill-sweep --- */
+.btn {
+    position: relative;
+    overflow: hidden;
+    background: transparent !important;
+    color: var(--ink) !important;
+    border: 1px solid var(--ink) !important;
+    border-radius: 0 !important;
+    padding: 15px 34px;
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    box-shadow: none !important;
+    transition: color 0.35s cubic-bezier(0.76, 0, 0.24, 1), letter-spacing 0.35s ease;
+    z-index: 0;
+}
+.btn::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: var(--accent) !important;
+    border: none !important;
+    transform: translateY(101%);
+    transition: transform 0.4s cubic-bezier(0.76, 0, 0.24, 1);
+    z-index: -1;
+}
+.btn:hover { color: #FFFFFF !important; letter-spacing: 3px; transform: none; box-shadow: none !important; }
+.btn:hover::before { transform: translateY(0); }
+.btn:disabled { background: transparent !important; color: var(--ink-soft) !important; border-color: rgba(17,16,15,0.2) !important; }
+.btn:disabled::before { display: none; }
+</style>
+</head>
+<body>
+
+<div class="intro2" aria-hidden="true">
+    <div class="intro2-inner">
+        <div class="intro2-word">ROUGE</div>
+        <div class="intro2-rule"></div>
+        <div class="intro2-caption">Beauty price intelligence</div>
+    </div>
+    <div class="intro2-counter">00</div>
+</div>
+<div class="parallax-word" aria-hidden="true"><span>RO</span><span>U</span><span>GE</span></div>
+<div class="parallax-rule" aria-hidden="true"></div>
+
+<div class="wrap">
+    <div class="nav-bar">
+        <div class="nav-logo" aria-label="Rouge">ROUGE</div>
+        <div class="nav-links">
+            <a class="nav-link" href="index.html">Home</a>
+            <a class="nav-link active" href="compare.html">Compare</a>
+        </div>
+    </div>
+
+    <section class="compare-hero">
+        <div class="hero-kicker reveal">Rouge / ingredient intelligence</div>
+        <h1 class="reveal">Compare what is <em>inside.</em></h1>
+        <div class="section-sub reveal">Find the closest matches, then see which formulas and prices hold up side by side.</div>
+    </section>
+
+    <section>
+        <div class="section-heading reveal">Find similar products</div>
+        <div class="section-sub reveal">Search a product you already like, and find others with similar ingredient profiles.</div>
+        <div class="search-box">
+            <input type="text" class="search-input" id="similar-search" placeholder="Search by product or brand name...">
+            <div class="search-results" id="similar-results-dropdown"></div>
+        </div>
+        <div class="filters-row">
+            <div class="filter-field">
+                <label>Category</label>
+                <select id="similar-category">
+                    <option value="same">Same as reference</option>
+                    <option value="all">All categories</option>
+                </select>
+            </div>
+            <div class="filter-field">
+                <label>Size tolerance: <span id="tol-value">0.5</span></label>
+                <input type="range" id="similar-tolerance" min="0.1" max="1.0" step="0.1" value="0.5">
+            </div>
+        </div>
+        <div id="similar-list" class="row-list"></div>
+    </section>
+
+    <div class="marquee" aria-hidden="true">
+        <div class="marquee-track">
+            <span>Rouge <em>&mdash;</em> Know what beauty's worth <em>&mdash;</em> Ingredient intelligence <em>&mdash;</em></span>
+            <span>Rouge <em>&mdash;</em> Know what beauty's worth <em>&mdash;</em> Ingredient intelligence <em>&mdash;</em></span>
+        </div>
+    </div>
+
+    <section>
+        <div class="section-heading reveal">Compare side-by-side</div>
+        <div class="section-sub reveal">Choose any 2-3 products from the list or the picker below to compare their formulas side by side.</div>
+        <div class="compare-picker">
+            <label for="compare-product-select">Choose 2-3 products</label>
+            <button class="compare-picker-toggle" id="compare-picker-toggle" type="button" aria-expanded="false" aria-controls="compare-product-select">
+                <span>Select products</span><span class="compare-picker-count" id="compare-picker-count">0/3 selected</span>
+            </button>
+            <div class="compare-picker-menu" id="compare-product-select" aria-describedby="compare-picker-note"></div>
+            <div id="compare-picker-note" class="loading-note">Loading products...</div>
+        </div>
+        <div class="selected-chips" id="selected-chips"></div>
+        <button class="btn" id="compare-btn" onclick="runCompare()" disabled>Compare</button>
+        <div id="compare-output" style="margin-top:24px;"></div>
+    </section>
+
+    <footer>Rouge — built on real Sephora catalog data</footer>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/ScrollTrigger.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/SplitText.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/ScrambleTextPlugin.min.js"></script>
+<script>
+(function () {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    gsap.registerPlugin(ScrollTrigger, SplitText, ScrambleTextPlugin);
+    /* --- Intro sequence --- */
+    if (document.querySelector('.intro2')) {
+        const introTl = gsap.timeline();
+        document.fonts.ready.then(() => {
+            const introSplit = new SplitText('.intro2-word', { type: 'chars', mask: 'chars' });
+            introTl
+                .from(introSplit.chars, { yPercent: 112, stagger: 0.055, duration: 0.85, ease: 'power4.out' })
+                .to('.intro2-rule', { width: 'min(300px, 52vw)', duration: 0.6, ease: 'power3.inOut' }, '-=0.35')
+                .to('.intro2-caption', { opacity: 1, duration: 0.4 }, '-=0.25')
+                .to('.intro2-word', { letterSpacing: '0.5em', duration: 0.55, ease: 'power2.inOut' }, '+=0.15')
+                .to('.intro2', { yPercent: -100, duration: 0.85, ease: 'power4.inOut' }, '-=0.1')
+                .set('.intro2', { display: 'none' });
+        });
+        const counterObj = { v: 0 };
+        const counterEl = document.querySelector('.intro2-counter');
+        gsap.to(counterObj, {
+            v: 100, duration: 1.55, ease: 'power2.inOut',
+            onUpdate: () => { counterEl.textContent = String(Math.round(counterObj.v)).padStart(2, '0'); }
+        });
+    }
+
+
+    /* 1 - Masked headline reveal */
+    document.fonts.ready.then(() => {
+        const split = new SplitText('.compare-hero h1', { type: 'lines,words', mask: 'lines' });
+        gsap.from(split.words, {
+            yPercent: 115,
+            duration: 1.1,
+            stagger: 0.07,
+            ease: 'power4.out',
+            delay: 2.05
+        });
+    });
+
+    /* 5 - Scramble-decode the eyebrow label */
+    gsap.to('.hero-kicker', {
+        duration: 1.1,
+        delay: 2.25,
+        scrambleText: { text: 'Rouge / ingredient intelligence', chars: 'upperCase', speed: 0.55 }
+    });
+
+    /* 4 - Watermark depth drift */
+    gsap.utils.toArray('.parallax-word span').forEach((el, i) => {
+        gsap.to(el, {
+            y: [-60, -130, -200][i],
+            rotation: [-2, 1.5, -1.2][i],
+            ease: 'none',
+            scrollTrigger: { trigger: document.body, start: 'top top', end: 'bottom bottom', scrub: 1.2 }
+        });
+    });
+
+
+    /* magnetic buttons */
+    document.querySelectorAll('.btn').forEach(btn => {
+        btn.addEventListener('mousemove', (e) => {
+            const r = btn.getBoundingClientRect();
+            gsap.to(btn, { x: (e.clientX - r.left - r.width / 2) * 0.18, y: (e.clientY - r.top - r.height / 2) * 0.3, duration: 0.4, ease: 'power2.out' });
+        });
+        btn.addEventListener('mouseleave', () => {
+            gsap.to(btn, { x: 0, y: 0, duration: 0.8, ease: 'elastic.out(1, 0.4)' });
+        });
+    });
+    /* 6 - Infinite marquee */
+    gsap.to('.marquee-track', { xPercent: -50, repeat: -1, ease: 'none', duration: 22 });
+
+    /* Dynamic content - animate as it renders */
+    function animateContent(container) {
+        /* rows in the similar-products list */
+        const rows = container.querySelectorAll('.value-row:not(.gsap-done)');
+        rows.forEach((row) => {
+            row.classList.add('gsap-done');
+
+            gsap.from(row, {
+                opacity: 0, y: 26, duration: 0.7, ease: 'power3.out',
+                scrollTrigger: { trigger: row, start: 'top 88%', once: true }
+            });
+
+            /* count-up prices */
+            row.querySelectorAll('.row-price-main').forEach(cell => {
+                const final = parseFloat(cell.textContent.replace(/[^0-9.]/g, ''));
+                if (isNaN(final)) return;
+                const obj = { v: 0 };
+                gsap.to(obj, {
+                    v: final, duration: 1.1, ease: 'power2.out',
+                    scrollTrigger: { trigger: row, start: 'top 88%', once: true },
+                    onUpdate: () => { cell.textContent = '$' + obj.v.toFixed(2); }
+                });
+            });
+
+            /* similarity bars sweep in from zero */
+            const fill = row.querySelector('.sim-bar-fill');
+            if (fill) {
+                gsap.from(fill, {
+                    scaleX: 0, transformOrigin: 'left center', duration: 1.0, ease: 'power2.inOut',
+                    scrollTrigger: { trigger: row, start: 'top 88%', once: true },
+                    delay: 0.15
+                });
+            }
+
+            /* magnetic rows */
+            row.addEventListener('mousemove', (e) => {
+                const r = row.getBoundingClientRect();
+                const dx = (e.clientX - r.left - r.width / 2) / r.width;
+                const dy = (e.clientY - r.top - r.height / 2) / r.height;
+                gsap.to(row, { x: dx * 8, y: dy * 6, duration: 0.4, ease: 'power2.out' });
+            });
+            row.addEventListener('mouseleave', () => {
+                gsap.to(row, { x: 0, y: 0, duration: 0.9, ease: 'elastic.out(1, 0.45)' });
+            });
+        });
+
+        /* comparison output: cards + shared + unique columns stagger in */
+        const blocks = container.querySelectorAll('.product-card:not(.gsap-done), .shared-section:not(.gsap-done), .unique-column:not(.gsap-done)');
+        if (blocks.length) {
+            blocks.forEach(b => b.classList.add('gsap-done'));
+            gsap.from(blocks, {
+                opacity: 0, y: 24, duration: 0.7, stagger: 0.1, ease: 'power3.out'
+            });
+        }
+
+        /* scramble shared-function tags */
+        container.querySelectorAll('.shared-tag:not(.gsap-done)').forEach(t => {
+            t.classList.add('gsap-done');
+            const text = t.textContent;
+            gsap.to(t, { duration: 0.7, scrambleText: { text, speed: 0.6 } });
+        });
+    }
+
+    ['similar-list', 'compare-output'].forEach(id => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        new MutationObserver(() => animateContent(el)).observe(el, { childList: true, subtree: true });
+    });
+})();
+</script>
+<script type="module">
+import { Client } from "https://cdn.jsdelivr.net/npm/@gradio/client/dist/index.min.js";
+
+const SPACE_ID = "siyadixit/sephora-pricing-model";
+let client = null;
+let allProducts = [];
+let selectedForCompare = [];
+
+async function getClient() {
+    if (!client) client = await Client.connect(SPACE_ID);
+    return client;
+}
+
+const revealObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) entry.target.classList.add('visible');
+    });
+}, { threshold: 0.1 });
+document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+
+const parallaxWord = document.querySelector('.parallax-word');
+const parallaxRule = document.querySelector('.parallax-rule');
+let parallaxFrame = null;
+function updateParallax() {
+    parallaxFrame = null;
+    const scrollY = window.scrollY;
+    parallaxWord.style.setProperty('--parallax-y', `${scrollY * -0.16}px`);
+    parallaxRule.style.setProperty('--parallax-rule-y', `${scrollY * 0.08}px`);
+}
+if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    window.addEventListener('scroll', () => {
+        if (!parallaxFrame) parallaxFrame = requestAnimationFrame(updateParallax);
+    }, { passive: true });
+    updateParallax();
+}
+
+async function loadAllProducts() {
+    const c = await getClient();
+    const result = await c.predict("/all_products", {});
+    allProducts = result.data[0];
+}
+
+function setupComparePicker() {
+    const picker = document.getElementById('compare-product-select');
+    const toggle = document.getElementById('compare-picker-toggle');
+    const count = document.getElementById('compare-picker-count');
+    const note = document.getElementById('compare-picker-note');
+    picker.innerHTML = `<input class="compare-picker-search" id="compare-picker-search" type="search" placeholder="Search products by name or brand..." aria-label="Search products by name or brand"><span class="compare-picker-match-count" id="compare-picker-match-count">All products</span><div class="compare-options-list"></div>`;
+    const optionsList = picker.querySelector('.compare-options-list');
+    const search = picker.querySelector('.compare-picker-search');
+    const matchCount = picker.querySelector('.compare-picker-match-count');
+    note.textContent = 'Choose up to three products.';
+    toggle.addEventListener('click', () => {
+        const isOpen = picker.classList.toggle('open');
+        toggle.setAttribute('aria-expanded', String(isOpen));
+    });
+    const renderPickerOptions = (query) => {
+        const matches = query ? searchProducts(query) : allProducts;
+        const visibleProducts = query ? matches.slice(0, 20) : matches;
+        optionsList.innerHTML = visibleProducts.map(product => {
+            const index = allProducts.indexOf(product);
+            const checked = selectedForCompare.some(selected => selected.brand === product.brand && selected.name === product.name) ? ' checked' : '';
+            return `<label class="compare-option"><input type="checkbox" data-picker-index="${index}"${checked}><span>${product.brand} — ${product.name}</span></label>`;
+        }).join('') || '<div class="empty-note">No matching products.</div>';
+        matchCount.textContent = query ? `${matches.length} matching product${matches.length === 1 ? '' : 's'}` : 'All products';
+    };
+    renderPickerOptions('');
+    search.addEventListener('focus', () => {
+        picker.classList.add('open');
+        toggle.setAttribute('aria-expanded', 'true');
+    });
+    search.addEventListener('input', (event) => {
+        const query = event.target.value.toLowerCase().trim();
+        const shouldOpen = query.length > 0;
+        picker.classList.toggle('open', shouldOpen);
+        toggle.setAttribute('aria-expanded', String(shouldOpen));
+        renderPickerOptions(query);
+    });
+    picker.addEventListener('change', (event) => {
+        if (!event.target.matches('.compare-option input')) return;
+        const product = allProducts[event.target.dataset.pickerIndex];
+        if (event.target.checked && selectedForCompare.length >= 3) {
+            event.target.checked = false;
+            note.textContent = 'Choose no more than three products.';
+        } else if (event.target.checked) {
+            selectedForCompare.push(product);
+            note.textContent = selectedForCompare.length < 2 ? 'Choose at least two products.' : 'Ready to compare.';
+        } else {
+            selectedForCompare = selectedForCompare.filter(selected => !(selected.brand === product.brand && selected.name === product.name));
+            note.textContent = selectedForCompare.length < 2 ? 'Choose at least two products.' : 'Ready to compare.';
+        }
+        count.textContent = `${selectedForCompare.length}/3 selected`;
+        renderChips();
+        document.querySelectorAll('#similar-list input[type="checkbox"]').forEach(cb => {
+            cb.checked = selectedForCompare.some(p =>
+                p.brand === cb.getAttribute('data-brand') && p.name === cb.getAttribute('data-name')
+            );
+        });
+    });
+}
+
+function sephoraSearchUrl(product) {
+    return `https://www.sephora.com/search?keyword=${encodeURIComponent(`${product.brand} ${product.name}`)}`;
+}
+
+function searchProducts(query) {
+    const tokens = query.toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim().split(/\s+/).filter(Boolean);
+    return allProducts
+        .map(product => {
+            const name = product.name.toLowerCase();
+            const brand = product.brand.toLowerCase();
+            const searchable = `${brand} ${name}`.replace(/[^a-z0-9]+/g, ' ');
+            const matches = tokens.every(token => searchable.includes(token));
+            if (!matches) return null;
+            const score = (name.startsWith(tokens[0]) ? 30 : 0) + (brand.startsWith(tokens[0]) ? 15 : 0) + tokens.length * 5;
+            return { product, score };
+        })
+        .filter(Boolean)
+        .sort((a, b) => b.score - a.score || a.product.name.localeCompare(b.product.name))
+        .slice(0, 12)
+        .map(item => item.product);
+}
+
+function setupSearch() {
+    const input = document.getElementById('similar-search');
+    const resultsBox = document.getElementById('similar-results-dropdown');
+
+    input.addEventListener('input', () => {
+        const q = input.value.trim();
+        if (q.length < 2) { resultsBox.classList.remove('open'); return; }
+        const matches = searchProducts(q);
+
+        resultsBox.innerHTML = matches.length === 0
+            ? '<div class="search-result-item">No matches</div>'
+            : matches.map(p => `
+                <div class="search-result-item" data-brand="${p.brand.replace(/"/g, '&quot;')}" data-name="${p.name.replace(/"/g, '&quot;')}">
+                    <div class="sr-brand">${p.brand}</div>
+                    ${p.name} — $${p.price.toFixed(2)}
+                </div>`).join('');
+        resultsBox.classList.add('open');
+
+        resultsBox.querySelectorAll('.search-result-item').forEach(item => {
+            item.addEventListener('click', () => {
+                const brand = item.getAttribute('data-brand');
+                const name = item.getAttribute('data-name');
+                resultsBox.classList.remove('open');
+                input.value = `${brand} — ${name}`;
+                if (brand && name) runFindSimilar(brand, name);
+            });
+        });
+    });
+
+    document.addEventListener('click', (e) => {
+        if (!input.contains(e.target) && !resultsBox.contains(e.target)) {
+            resultsBox.classList.remove('open');
+        }
+    });
+}
+
+async function runFindSimilar(brand, name) {
+    const list = document.getElementById('similar-list');
+    const category = document.getElementById('similar-category').value;
+    const tolerance = parseFloat(document.getElementById('similar-tolerance').value);
+    list.innerHTML = '<div class="loading-note">Finding similar products...</div>';
+    try {
+        const c = await getClient();
+        const result = await c.predict("/find_similar", {
+            brand, name, category_filter: category, size_tolerance: tolerance, n: 10
+        });
+        const data = result?.data?.[0];
+        if (!Array.isArray(data)) {
+            list.innerHTML = `<div class="empty-note">${data?.error || 'No similar products found.'}</div>`;
+            return;
+        }
+        list.innerHTML = data.map(p => `
+        <div class="value-row">
+            <div class="row-select">
+                <input type="checkbox" data-brand="${p.brand.replace(/"/g, '&quot;')}" data-name="${p.name.replace(/"/g, '&quot;')}" onchange="toggleCompareSelect(this)">
+            </div>
+            <div class="row-main">
+                <div class="row-name"><a href="${sephoraSearchUrl(p)}" target="_blank" rel="noopener noreferrer" title="View ${p.name} on Sephora">${p.name}</a></div>
+                <div class="row-meta">${p.brand} · ${p.category} · ${p.size_oz ?? '?'}oz</div>
+            </div>
+            <div class="row-price">
+                <div class="row-price-main">$${p.price.toFixed(2)}</div>
+            </div>
+            <div class="row-sim">
+                <div class="sim-bar-bg"><div class="sim-bar-fill" style="width:${p.similarity_pct}%"></div></div>
+                <div class="sim-pct">${p.similarity_pct}% similar</div>
+            </div>
+        </div>
+    `).join('');
+    } catch (error) {
+        console.error('Unable to find similar products', error);
+        list.innerHTML = '<div class="empty-note">The comparison service is unavailable. Please try again.</div>';
+    }
+}
+
+window.toggleCompareSelect = function(checkbox) {
+    const brand = checkbox.getAttribute('data-brand');
+    const name = checkbox.getAttribute('data-name');
+    if (checkbox.checked) {
+        if (selectedForCompare.length >= 3) { checkbox.checked = false; return; }
+        selectedForCompare.push({ brand, name });
+    } else {
+        selectedForCompare = selectedForCompare.filter(p => !(p.brand === brand && p.name === name));
+    }
+    document.querySelectorAll('#compare-product-select .compare-option input').forEach(input => {
+        const product = allProducts[input.dataset.pickerIndex];
+        input.checked = selectedForCompare.some(p => p.brand === product.brand && p.name === product.name);
+    });
+    document.getElementById('compare-picker-count').textContent = `${selectedForCompare.length}/3 selected`;
+    renderChips();
+};
+
+function renderChips() {
+    const chipsBox = document.getElementById('selected-chips');
+    chipsBox.innerHTML = selectedForCompare.map((p, i) => `
+        <div class="selected-chip">
+            ${p.name}
+            <span class="remove" onclick="removeChip(${i})">✕</span>
+        </div>
+    `).join('');
+    document.getElementById('compare-btn').disabled = selectedForCompare.length < 2;
+}
+
+window.removeChip = function(i) {
+    selectedForCompare.splice(i, 1);
+    document.querySelectorAll('#compare-product-select .compare-option input').forEach(input => {
+        const product = allProducts[input.dataset.pickerIndex];
+        input.checked = selectedForCompare.some(p => p.brand === product.brand && p.name === product.name);
+    });
+    document.getElementById('compare-picker-count').textContent = `${selectedForCompare.length}/3 selected`;
+    renderChips();
+    document.querySelectorAll('#similar-list input[type="checkbox"]').forEach(cb => {
+        const stillSelected = selectedForCompare.some(p =>
+            p.brand === cb.getAttribute('data-brand') && p.name === cb.getAttribute('data-name')
+        );
+        cb.checked = stillSelected;
+    });
+};
+
+window.runCompare = async function() {
+    if (selectedForCompare.length < 2) return;
+    const output = document.getElementById('compare-output');
+    const compareButton = document.getElementById('compare-btn');
+    compareButton.disabled = true;
+    output.innerHTML = '<div class="loading-note">Comparing formulas...</div>';
+    try {
+        const c = await getClient();
+        const result = await c.predict("/compare_products", { product_list: selectedForCompare });
+        const data = result?.data?.[0];
+        if (!data || data.error || !Array.isArray(data.products)) {
+            output.innerHTML = `<div class="empty-note">${data?.error || 'The comparison returned no products.'}</div>`;
+            return;
+        }
+
+    let cardsHtml = data.products.map(p => `
+        <div class="product-card">
+            <div class="product-brand">${p.brand}</div>
+            <div class="product-name"><a href="${sephoraSearchUrl(p)}" target="_blank" rel="noopener noreferrer" title="View ${p.name} on Sephora">${p.name}</a></div>
+            <div class="stat-row"><span>Price</span><strong>$${p.price.toFixed(2)}</strong></div>
+            <div class="stat-row"><span>Size</span><strong>${p.size_oz ?? '?'}oz</strong></div>
+            <div class="stat-row"><span>Rating</span><strong>${p.rating} ★</strong></div>
+        </div>
+    `).join('');
+
+    const sharedFunctions = Array.isArray(data.shared_functions) ? data.shared_functions : [];
+    let sharedHtml = sharedFunctions.length > 0
+        ? `<div class="shared-section">
+             <div class="section-label">What they have in common</div>
+             <div class="tag-row">${sharedFunctions.map(fn => `<span class="shared-tag">${fn}</span>`).join('')}</div>
+           </div>`
+        : `<div class="shared-section">
+             <div class="section-label">What they have in common</div>
+             <div class="empty-note">No overlapping ingredient functions found — these formulas differ meaningfully.</div>
+           </div>`;
+
+    let uniqueHtml = `<div class="section-label">What makes each one different</div><div class="unique-grid">`;
+    data.products.forEach(p => {
+        const uniqueIngredients = Array.isArray(p.unique_ingredients) ? p.unique_ingredients : [];
+        const rows = uniqueIngredients.length > 0
+            ? uniqueIngredients.map(u => `<div class="ingredient-row"><span class="ing-name">${u.ingredient}</span><span class="ing-fn">${u.function}</span></div>`).join('')
+            : '<div class="empty-note">Nothing distinctive found</div>';
+        uniqueHtml += `<div class="unique-column"><div class="unique-header">${p.brand}</div>${rows}</div>`;
+    });
+    uniqueHtml += '</div>';
+
+    output.innerHTML = `
+        <div class="cards-row">${cardsHtml}</div>
+        ${sharedHtml}
+        ${uniqueHtml}
+    `;
+    } catch (error) {
+        console.error('Unable to compare products', error);
+        output.innerHTML = '<div class="empty-note">The comparison service is unavailable. Please try again.</div>';
+    } finally {
+        compareButton.disabled = selectedForCompare.length < 2;
+    }
+};
+
+async function init() {
+    try {
+        await loadAllProducts();
+        setupSearch();
+        setupComparePicker();
+        document.getElementById('similar-tolerance').addEventListener('input', (e) => {
+            document.getElementById('tol-value').textContent = e.target.value;
+        });
+    } catch (error) {
+        console.error('Unable to load products', error);
+        document.getElementById('similar-list').innerHTML = '<div class="empty-note">Products could not be loaded. Please refresh and try again.</div>';
+    }
+}
+
+init();
+</script>
+
+</body>
+</html>
