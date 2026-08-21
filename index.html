@@ -3,128 +3,1002 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Siya Dixit — Portfolio</title>
+<title>Rouge — Beauty Pricing & Ingredient Intelligence</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:wght@300;400&family=Playfair+Display:ital,wght@0,600;1,500&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-  * { box-sizing: border-box; }
-  body {
+:root {
+    --bg: #F3EEE8;
+    --ink: #171113;
+    --ink-soft: #817477;
+    --accent: #861B32;
+    --good: #80683D;
+    --glass: rgba(255, 255, 255, 0.55);
+    --glass-border: rgba(255, 255, 255, 0.7);
+}
+
+* { box-sizing: border-box; }
+
+body {
     margin: 0;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
-    background: #fafafa;
-    color: #1a1a1a;
-    line-height: 1.6;
-  }
-  header {
-    padding: 60px 24px 40px;
-    max-width: 800px;
-    margin: 0 auto;
-  }
-  h1 {
-    font-size: 2rem;
-    margin-bottom: 8px;
-  }
-  .subtitle {
-    color: #666;
-    font-size: 1.1rem;
-    margin-bottom: 0;
-  }
-  main {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 0 24px 80px;
-  }
-  .project {
-    background: #fff;
-    border: 1px solid #e5e5e5;
-    border-radius: 12px;
-    padding: 32px;
-    margin-top: 32px;
-  }
-  .project h2 {
-    margin-top: 0;
-    font-size: 1.4rem;
-  }
-  .tag {
-    display: inline-block;
-    background: #f0f0f0;
-    color: #444;
-    font-size: 0.8rem;
-    padding: 4px 10px;
-    border-radius: 999px;
-    margin-right: 6px;
-    margin-bottom: 12px;
-  }
-  .finding {
-    background: #fef8ec;
-    border-left: 3px solid #e8a33d;
-    padding: 16px 20px;
-    border-radius: 4px;
-    margin: 20px 0;
-    font-size: 0.95rem;
-  }
-  .finding strong { display: block; margin-bottom: 6px; }
-  iframe {
-    width: 100%;
-    height: 950px;
-    border: 1px solid #e5e5e5;
-    border-radius: 8px;
-    margin-top: 20px;
-  }
-  ul { padding-left: 20px; }
-  li { margin-bottom: 6px; }
-  footer {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-weight: 400;
+    overflow-x: hidden;
+    position: relative;
+}
+
+.intro-screen {
+    position: fixed;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    background: #24131A;
+    color: var(--bg);
+    z-index: 200;
+    pointer-events: none;
+    animation: intro-exit 1.2s cubic-bezier(0.76, 0, 0.24, 1) forwards;
+}
+.intro-mark {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    font-family: 'Bodoni Moda', serif;
+    font-size: 12px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    animation: intro-mark 0.8s ease-out both;
+}
+.intro-mark::before {
+    content: "";
+    width: 34px;
+    height: 1px;
+    background: var(--accent);
+}
+.intro-loader {
+    position: relative;
+    z-index: 2;
+    width: min(360px, 68vw);
     text-align: center;
-    color: #999;
-    font-size: 0.85rem;
+    filter: blur(13px);
+    transform: scale(0.96);
+    animation: spotlight-focus 0.85s 0.14s ease-out forwards;
+}
+.intro-loader .intro-mark {
+    justify-content: center;
+    font-size: clamp(18px, 3vw, 26px);
+    letter-spacing: 7px;
+}
+.intro-loader .intro-mark::before { display: none; }
+.intro-caption {
+    display: block;
+    margin-top: 16px;
+    color: rgba(243, 238, 232, 0.7);
+    font-family: 'Inter', sans-serif;
+    font-size: 9px;
+    letter-spacing: 2.4px;
+    text-transform: uppercase;
+    opacity: 0;
+    animation: loader-caption 0.45s 0.38s ease-out forwards;
+}
+.intro-progress {
+    height: 2px;
+    margin-top: 30px;
+    background: rgba(243, 238, 232, 0.22);
+    overflow: hidden;
+}
+.intro-progress span {
+    display: block;
+    width: 100%;
+    height: 100%;
+    background: var(--accent);
+    transform: translateX(-100%);
+    animation: loader-progress 1.05s 0.18s cubic-bezier(0.76, 0, 0.24, 1) forwards;
+}
+.intro-screen::before {
+    content: "";
+    position: absolute;
+    inset: -25% -35%;
+    background: radial-gradient(ellipse 18% 85% at 0% 50%, rgba(255, 246, 231, 0.95) 0%, rgba(211, 153, 116, 0.45) 28%, transparent 72%);
+    filter: blur(18px);
+    animation: spotlight-sweep 1.2s cubic-bezier(0.76, 0, 0.24, 1) forwards;
+}
+.intro-lipstick {
+    position: absolute;
+    z-index: 1;
+    width: 144px;
+    height: auto;
+    left: -180px;
+    top: 50%;
+    transform: translateY(-50%) rotate(-9deg);
+    mix-blend-mode: multiply;
+    animation: lipstick-sweep 1.2s cubic-bezier(0.76, 0, 0.24, 1) both;
+}
+.intro-line {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 50%;
+    height: 1px;
+    background: var(--accent);
+    transform: scaleX(0);
+    transform-origin: left;
+    animation: line-draw 0.9s 0.1s cubic-bezier(0.76, 0, 0.24, 1) forwards;
+}
+
+@keyframes intro-mark {
+    from { opacity: 0; transform: translateY(10px); letter-spacing: 8px; }
+    to { opacity: 1; transform: translateY(0); letter-spacing: 4px; }
+}
+@keyframes intro-exit {
+    0%, 68% { opacity: 1; visibility: visible; }
+    100% { opacity: 0; visibility: hidden; }
+}
+@keyframes lipstick-sweep {
+    0% { left: -180px; }
+    100% { left: calc(100% + 40px); }
+}
+@keyframes line-draw { to { transform: scaleX(1); } }
+@keyframes loader-caption { to { opacity: 1; } }
+@keyframes loader-progress { to { transform: translateX(0); } }
+@keyframes spotlight-sweep { to { transform: translateX(115%); } }
+@keyframes spotlight-focus { to { filter: blur(0); transform: scale(1); } }
+
+body::before, body::after {
+    content: "";
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(90px);
+    z-index: 0;
+    pointer-events: none;
+}
+body::before { width: 480px; height: 480px; background: rgba(228, 0, 43, 0.13); top: -120px; right: -100px; }
+body::after { width: 420px; height: 420px; background: rgba(228, 0, 43, 0.08); bottom: 10%; left: -140px; }
+
+.parallax-word, .parallax-rule {
+    position: fixed;
+    pointer-events: none;
+    z-index: 0;
+    user-select: none;
+    will-change: transform;
+}
+.parallax-word {
+    top: auto;
+    bottom: 8vh;
+    right: 0.02em;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    color: rgba(17, 16, 15, 0.045);
+    font-family: 'Bodoni Moda', serif;
+    font-size: clamp(74px, 15vw, 190px);
+    line-height: 0.7;
+    letter-spacing: -0.06em;
+    transform: translate3d(0, var(--parallax-y, 0px), 0);
+}
+.parallax-word span:nth-child(2) {
+    align-self: flex-end;
+    margin-right: 0.18em;
+}
+.parallax-rule {
+    top: 0;
+    bottom: 0;
+    left: 12%;
+    width: 1px;
+    background: var(--accent);
+    opacity: 0.3;
+    transform: translate3d(0, var(--parallax-rule-y, 0px), 0);
+}
+
+h1, h2, h3 {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-style: italic;
+    font-weight: 600;
+    margin: 0;
+}
+
+.wrap { max-width: 1180px; margin: 0 auto; padding: 0 24px; position: relative; z-index: 1; }
+
+.nav-bar {
+    position: sticky;
+    top: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 24px;
+    margin: 0 0 50px 0;
+    background: rgba(244, 240, 235, 0.94);
+    border-bottom: none;
+    z-index: 100;
+}
+.nav-logo {
+    font-family: 'Bodoni Moda', serif;
+    font-weight: 300;
+    font-size: 25px;
+    color: var(--ink);
+    letter-spacing: 4px;
+}
+.nav-links { display: flex; gap: 8px; }
+.nav-link {
+    font-size: 12px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--ink-soft);
+    text-decoration: none;
+    padding: 8px 16px;
+    border-radius: 0;
+    transition: color 0.2s ease, background 0.2s ease;
+}
+.nav-link.active, .nav-link:hover { color: var(--ink); background: rgba(28, 26, 23, 0.06); }
+
+*, *::before, *::after { border: none !important; }
+
+.value-row, .product-card, .shared-section, .unique-column {
+    background: rgba(255, 255, 255, 0.42);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    border-color: rgba(17, 16, 15, 0.24);
+    border-radius: 0;
+    box-shadow: none;
+}
+
+section { position: relative; margin-bottom: 64px; padding: 0 24px; }
+
+.section-heading {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 27px;
+    font-style: italic;
+    font-weight: 600;
+    letter-spacing: 0.2px;
+    margin-bottom: 8px;
+}
+.section-sub {
+    color: var(--ink-soft);
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 14px;
+    font-style: italic;
+    line-height: 1.55;
+    margin-bottom: 24px;
+    max-width: 500px;
+}
+
+.hero-section { padding-top: 34px; margin-bottom: 88px; }
+.hero-kicker {
+    color: var(--accent);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 2.2px;
+    text-transform: uppercase;
+    margin-bottom: 18px;
+}
+.hero-title {
+    max-width: 700px;
+    font-size: clamp(46px, 8vw, 92px);
+    line-height: 0.95;
+    letter-spacing: 0;
+    font-weight: 300;
+    font-style: normal;
+    overflow: hidden;
+}
+.hero-title span {
+    display: block;
+    opacity: 0;
+    transform: translateY(105%);
+    animation: title-rise 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+.hero-title span:nth-child(2) { animation-delay: 0.12s; }
+.hero-title span:nth-child(3) { animation-delay: 0.24s; }
+.hero-title span:last-child { white-space: nowrap; }
+.hero-title em { color: var(--accent); font-weight: 600; }
+.hero-copy { max-width: 420px; margin: 26px 0 0; }
+@keyframes title-rise {
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .intro-screen, .intro-mark, .intro-lipstick, .intro-line, .intro-caption, .intro-progress span, .intro-loader, .intro-screen::before, .hero-title span { animation: none; }
+    .intro-screen { display: none; }
+    .hero-title span { opacity: 1; transform: none; }
+    .reveal { opacity: 1; transform: none; transition: none; }
+}
+
+.reveal {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1), transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.reveal.visible { opacity: 1; transform: translateY(0); }
+
+.row-list { display: flex; flex-direction: column; gap: 0; }
+.table-head, .value-row {
+    display: grid;
+    grid-template-columns: minmax(250px, 2.2fr) minmax(120px, 1.2fr) 0.7fr 0.8fr 1fr 0.7fr;
+    align-items: center;
+    column-gap: 28px;
+}
+.table-head {
+    padding: 0 0 18px;
+    color: var(--ink-soft);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 1.7px;
+    text-transform: uppercase;
+}
+.value-row {
+    min-height: 118px;
+    padding: 22px 0;
+    background: transparent;
+    transition: background 0.2s ease;
+}
+.value-row:hover { background: rgba(255, 255, 255, 0.34); }
+
+.row-main { min-width: 0; }
+.row-name { font-family: 'Playfair Display', serif; font-weight: 700; font-size: 20px; line-height: 1.1; }
+.row-name a { color: inherit; text-decoration: none; }
+.row-name a:hover { color: var(--accent); }
+.row-meta { font-size: 12px; color: var(--ink-soft); margin-top: 3px; }
+.row-category { color: #68635e; font-size: 14px; }
+.row-price { text-align: left; }
+.row-price-main { font-size: 15px; font-weight: 600; }
+.row-price-sub { font-size: 11px; color: var(--ink-soft); }
+.row-fair { color: #68635e; font-size: 15px; font-weight: 600; }
+.row-gap { font-size: 13px; font-weight: 600; }
+.row-loves { color: var(--ink-soft); font-size: 12px; }
+.trend { width: 74px; height: 26px; overflow: visible; }
+.trend polyline { fill: none; stroke-width: 1.6; vector-effect: non-scaling-stroke; }
+.trend-up polyline { stroke: var(--accent); }
+.trend-down polyline { stroke: var(--good); }
+.trend-fair polyline { stroke: var(--ink-soft); }
+
+@media (max-width: 760px) {
+    .table-head, .value-row { grid-template-columns: minmax(190px, 2fr) 0.8fr 0.9fr 0.8fr; column-gap: 14px; }
+    .table-head span:nth-child(2), .row-category, .table-head span:nth-child(4), .row-fair { display: none; }
+    .table-head span:nth-child(5), .row-gap { grid-column: 3; }
+    .table-head span:nth-child(6), .trend { grid-column: 4; grid-row: 1; }
+    .row-name { font-size: 17px; }
+}
+.gap-over { color: var(--accent); }
+.gap-under { color: var(--good); }
+.gap-fair { color: var(--ink-soft); font-weight: 400; }
+
+.loading-note, .empty-note { color: var(--ink-soft); font-size: 13px; padding: 12px 4px; font-style: italic; }
+
+.search-box { position: relative; margin-bottom: 20px; max-width: 480px; }
+.search-input {
+    width: 100%;
+    padding: 15px 20px;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    border: 1px solid var(--glass-border);
+    border-radius: 24px;
+    background: var(--glass);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    color: var(--ink);
+    outline: none;
+    transition: box-shadow 0.2s ease;
+}
+.search-input:focus { box-shadow: 0 0 0 3px rgba(228, 0, 43, 0.12); }
+.search-results {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0; right: 0;
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(24px) saturate(180%);
+    -webkit-backdrop-filter: blur(24px) saturate(180%);
+    border: 1px solid var(--glass-border);
+    border-radius: 18px;
+    max-height: 260px;
+    overflow-y: auto;
+    z-index: 50;
+    display: none;
+    box-shadow: 0 8px 30px rgba(28, 26, 23, 0.10);
+}
+.search-results.open { display: block; }
+.search-result-item { padding: 12px 18px; font-size: 13px; cursor: pointer; border-radius: 12px; margin: 4px; transition: background 0.15s ease; }
+.search-result-item:hover { background: rgba(228, 0, 43, 0.06); }
+.search-result-item .sr-brand { color: var(--ink-soft); font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+.btn {
+    background: var(--accent);
+    color: #FFFFFF;
+    border: none;
+    padding: 14px 28px;
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    border-radius: 24px;
+    cursor: pointer;
+    box-shadow: 0 4px 18px rgba(228, 0, 43, 0.30);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(228, 0, 43, 0.40); }
+.btn:disabled { background: #D8D2CA; color: #FFFFFF; cursor: not-allowed; box-shadow: none; transform: none; }
+
+.filters-row { display: flex; gap: 14px; margin-bottom: 20px; flex-wrap: wrap; align-items: flex-end; }
+.filter-field label { display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 0.8px; color: var(--ink-soft); margin-bottom: 6px; }
+.filter-field select, .filter-field input[type="range"] {
+    font-family: 'Inter', sans-serif;
+    padding: 10px 14px;
+    border: 1px solid var(--glass-border);
+    border-radius: 14px;
+    background: var(--glass);
+    backdrop-filter: blur(16px);
+}
+
+.cards-row { display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 24px; }
+.product-card {
+    background: var(--glass);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid var(--glass-border);
+    border-radius: 18px;
+    box-shadow: 0 4px 20px rgba(28, 26, 23, 0.05);
     padding: 20px;
-  }
+    flex: 1;
+    min-width: 220px;
+}
+.product-brand { font-size: 10px; text-transform: uppercase; letter-spacing: 1.2px; color: var(--ink-soft); }
+.product-name { font-family: 'Playfair Display', serif; font-weight: 700; font-size: 17px; margin: 4px 0 14px 0; }
+.stat-row { display: flex; justify-content: space-between; padding: 7px 0; border-top: 1px solid rgba(28,26,23,0.06); font-size: 13px; }
+.stat-row span { color: var(--ink-soft); }
+.stat-row strong { font-weight: 600; }
+
+.section-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 1.2px; color: var(--ink-soft); margin: 22px 0 12px 0; }
+.shared-section {
+    background: var(--glass);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid var(--glass-border);
+    border-radius: 18px;
+    box-shadow: 0 4px 20px rgba(28, 26, 23, 0.05);
+    padding: 20px;
+    margin-bottom: 20px;
+}
+.tag-row { display: flex; flex-wrap: wrap; gap: 8px; }
+.shared-tag {
+    background: rgba(228, 0, 43, 0.08);
+    color: var(--accent);
+    border: 1px solid rgba(228, 0, 43, 0.25);
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 500;
+}
+
+.unique-grid { display: flex; gap: 14px; flex-wrap: wrap; }
+.unique-column {
+    background: var(--glass);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid var(--glass-border);
+    border-radius: 18px;
+    box-shadow: 0 4px 20px rgba(28, 26, 23, 0.05);
+    padding: 18px;
+    flex: 1;
+    min-width: 240px;
+}
+.unique-header { font-family: 'Playfair Display', serif; font-style: italic; font-weight: 700; color: var(--accent); margin-bottom: 12px; font-size: 15px; }
+.ingredient-row { display: flex; justify-content: space-between; gap: 12px; padding: 7px 0; border-top: 1px solid rgba(28,26,23,0.06); font-size: 12px; }
+.ing-name { font-weight: 500; flex-shrink: 0; }
+.ing-fn { color: var(--ink-soft); text-align: right; }
+
+.row-select { flex: 0 0 22px; }
+.row-select input { width: 17px; height: 17px; accent-color: var(--accent); cursor: pointer; }
+.row-sim { flex: 0 0 130px; }
+.sim-bar-bg { width: 100%; height: 4px; background: rgba(28,26,23,0.08); border-radius: 4px; overflow: hidden; }
+.sim-bar-fill { height: 100%; background: var(--accent); border-radius: 4px; transition: width 0.4s ease; }
+.sim-pct { font-size: 10px; color: var(--ink-soft); text-align: right; margin-top: 4px; }
+
+.selected-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; min-height: 20px; }
+.selected-chip {
+    background: var(--ink); color: #FFFFFF; padding: 7px 14px; border-radius: 18px; font-size: 12px;
+    display: flex; align-items: center; gap: 8px;
+}
+.selected-chip .remove { cursor: pointer; opacity: 0.7; }
+.selected-chip .remove:hover { opacity: 1; }
+
+footer { text-align: center; padding: 40px 24px; color: var(--ink-soft); font-size: 12px; }
+
+/* GSAP takes over the hero reveal */
+.hero-title span { animation: none; opacity: 1; transform: none; }
+
+/* Marquee band */
+.marquee {
+    overflow: hidden;
+    white-space: nowrap;
+    padding: 18px 0;
+    margin: 0 -24px 64px;
+    border-top: 1px solid rgba(17,16,15,0.18) !important;
+    border-bottom: 1px solid rgba(17,16,15,0.18) !important;
+}
+.marquee-track { display: inline-flex; will-change: transform; }
+.marquee-track span {
+    font-family: 'Bodoni Moda', serif;
+    font-size: 13px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    padding-right: 48px;
+}
+.marquee-track span em { color: var(--accent); font-style: normal; }
+
+/* --- New GSAP intro --- */
+.intro2 {
+    position: fixed;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    background: #24131A;
+    z-index: 200;
+    pointer-events: none;
+}
+.intro2-inner { text-align: center; }
+.intro2-word {
+    font-family: 'Bodoni Moda', serif;
+    font-weight: 300;
+    font-size: clamp(44px, 9vw, 110px);
+    letter-spacing: 0.32em;
+    padding-left: 0.32em;
+    color: var(--bg);
+    line-height: 1;
+}
+.intro2-rule {
+    width: 0;
+    height: 1px;
+    margin: 26px auto 18px;
+    background: var(--accent);
+}
+.intro2-caption {
+    font-family: 'Inter', sans-serif;
+    font-size: 9px;
+    letter-spacing: 2.6px;
+    text-transform: uppercase;
+    color: rgba(243, 238, 232, 0.55);
+    opacity: 0;
+}
+.intro2-counter {
+    position: absolute;
+    bottom: 24px;
+    right: 40px;
+    font-family: 'Bodoni Moda', serif;
+    font-style: italic;
+    font-weight: 300;
+    font-size: clamp(64px, 12vw, 150px);
+    color: rgba(243, 238, 232, 0.09);
+    line-height: 1;
+}
+@media (prefers-reduced-motion: reduce) { .intro2 { display: none; } }
+
+/* --- Seamless nav (no hard edge) --- */
+.nav-bar {
+    background: linear-gradient(to bottom, var(--bg) 62%, rgba(243, 238, 232, 0)) !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding-bottom: 26px;
+}
+
+/* --- Cooler nav links: underline grows in --- */
+.nav-link { position: relative; padding: 8px 4px; margin: 0 10px; }
+.nav-link:hover { background: transparent !important; }
+.nav-link::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: 2px;
+    height: 1px;
+    width: 100%;
+    background: var(--accent) !important;
+    border: none !important;
+    transform: scaleX(0);
+    transform-origin: right;
+    transition: transform 0.35s cubic-bezier(0.76, 0, 0.24, 1);
+}
+.nav-link:hover::after, .nav-link.active::after { transform: scaleX(1); transform-origin: left; }
+
+/* --- Cooler buttons: editorial fill-sweep --- */
+.btn {
+    position: relative;
+    overflow: hidden;
+    background: transparent !important;
+    color: var(--ink) !important;
+    border: 1px solid var(--ink) !important;
+    border-radius: 0 !important;
+    padding: 15px 34px;
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    box-shadow: none !important;
+    transition: color 0.35s cubic-bezier(0.76, 0, 0.24, 1), letter-spacing 0.35s ease;
+    z-index: 0;
+}
+.btn::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: var(--accent) !important;
+    border: none !important;
+    transform: translateY(101%);
+    transition: transform 0.4s cubic-bezier(0.76, 0, 0.24, 1);
+    z-index: -1;
+}
+.btn:hover { color: #FFFFFF !important; letter-spacing: 3px; transform: none; box-shadow: none !important; }
+.btn:hover::before { transform: translateY(0); }
+.btn:disabled { background: transparent !important; color: var(--ink-soft) !important; border-color: rgba(17,16,15,0.2) !important; }
+.btn:disabled::before { display: none; }
 </style>
 </head>
 <body>
 
-<header>
-  <h1>Siya Dixit</h1>
-  <p class="subtitle">Data-driven projects at the intersection of business, fashion, and beauty</p>
-</header>
+<div class="intro2" aria-hidden="true">
+    <div class="intro2-inner">
+        <div class="intro2-word">ROUGE</div>
+        <div class="intro2-rule"></div>
+        <div class="intro2-caption">Beauty price intelligence</div>
+    </div>
+    <div class="intro2-counter">00</div>
+</div>
+<div class="parallax-word" aria-hidden="true"><span>RO</span><span>U</span><span>GE</span></div>
+<div class="parallax-rule" aria-hidden="true"></div>
 
-<main>
-  <div class="project">
-    <span class="tag">Machine Learning</span>
-    <span class="tag">Python / scikit-learn</span>
-    <span class="tag">Beauty Retail</span>
-
-    <h2>Sephora Beauty Product Pricing Model</h2>
-    <p>
-      A Gradient Boosting model trained on ~7,800 real Sephora products to predict a
-      "fair" price based on measurable attributes — category, size, formula complexity,
-      brand, and popularity signals. The goal: understand how much of beauty product
-      pricing is explained by measurable product substance versus intangible brand equity.
-    </p>
-
-    <div class="finding">
-      <strong>Key finding</strong>
-      Even after controlling for brand identity, the model systematically underestimates
-      prices for top-tier prestige brands (La Mer, SK-II, Guerlain, and others) — and the
-      gap grows with price: products under $50 track close to predicted price, while
-      products over $200 are priced on average 177% above what formula, size, and category
-      alone would predict. This suggests brand equity and positioning — not product
-      substance — become the dominant price driver in the luxury tier.
+<div class="wrap">
+    <div class="nav-bar">
+        <div class="nav-logo" aria-label="Rouge">ROUGE</div>
+        <div class="nav-links">
+            <a class="nav-link active" href="index.html">Home</a>
+            <a class="nav-link" href="compare.html">Compare</a>
+        </div>
     </div>
 
-    <p><strong>Try it yourself below</strong> — pick a real product to see how its actual
-    price compares to the model's prediction, or enter a hypothetical product's attributes
-    to get a data-driven price recommendation.</p>
+    <section class="hero-section">
+        <div class="hero-kicker reveal">Sephora / price intelligence</div>
+        <h1 class="hero-title" aria-label="Know what beauty's really worth.">
+            <span>Know what beauty's</span>
+            <span>really <em>worth.</em></span>
+        </h1>
+        <p class="section-sub hero-copy reveal">A clearer way to read what beauty costs, what it is worth, and where the smartest finds are hiding.</p>
+    </section>
 
-    <iframe
-      src="https://siyadixit-sephora-pricing-model.hf.space"
-      title="Sephora Pricing Model"
-      loading="lazy">
-    </iframe>
-  </div>
-</main>
+    <section>
+        <div class="section-heading reveal">Most loved right now</div>
+        <div class="section-sub reveal">Ranked by Sephora shoppers' actual love count, with each price checked against what the model predicts is fair.</div>
+        <div id="most-loved-list" class="row-list"><div class="loading-note">Loading...</div></div>
+    </section>
 
-<footer>
-  Built by Siya Dixit
-</footer>
+    <div class="marquee" aria-hidden="true">
+        <div class="marquee-track">
+            <span>Rouge <em>&mdash;</em> Know what beauty's worth <em>&mdash;</em> Price intelligence <em>&mdash;</em></span>
+            <span>Rouge <em>&mdash;</em> Know what beauty's worth <em>&mdash;</em> Price intelligence <em>&mdash;</em></span>
+        </div>
+    </div>
+
+    <section>
+        <div class="section-heading reveal">Best value finds</div>
+        <div class="section-sub reveal">The biggest gaps between price and predicted value, among well-rated products.</div>
+        <div id="best-value-list" class="row-list"><div class="loading-note">Loading...</div></div>
+    </section>
+
+    <section>
+        <div class="section-heading reveal">Look up a specific product</div>
+        <div class="section-sub reveal">Search for any product and see how its price compares to what the model predicts.</div>
+        <div class="search-box">
+            <input type="text" class="search-input" id="lookup-search" placeholder="Search by product or brand name...">
+            <div class="search-results" id="lookup-results"></div>
+        </div>
+        <div id="lookup-output"></div>
+    </section>
+
+    <footer>Rouge — built on real Sephora catalog data</footer>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/ScrollTrigger.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/SplitText.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/DrawSVGPlugin.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/ScrambleTextPlugin.min.js"></script>
+<script>
+(function () {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    gsap.registerPlugin(ScrollTrigger, SplitText, DrawSVGPlugin, ScrambleTextPlugin);
+    /* --- Intro sequence --- */
+    if (document.querySelector('.intro2')) {
+        const introTl = gsap.timeline();
+        document.fonts.ready.then(() => {
+            const introSplit = new SplitText('.intro2-word', { type: 'chars', mask: 'chars' });
+            introTl
+                .from(introSplit.chars, { yPercent: 112, stagger: 0.055, duration: 0.85, ease: 'power4.out' })
+                .to('.intro2-rule', { width: 'min(300px, 52vw)', duration: 0.6, ease: 'power3.inOut' }, '-=0.35')
+                .to('.intro2-caption', { opacity: 1, duration: 0.4 }, '-=0.25')
+                .to('.intro2-word', { letterSpacing: '0.5em', duration: 0.55, ease: 'power2.inOut' }, '+=0.15')
+                .to('.intro2', { yPercent: -100, duration: 0.85, ease: 'power4.inOut' }, '-=0.1')
+                .set('.intro2', { display: 'none' });
+        });
+        const counterObj = { v: 0 };
+        const counterEl = document.querySelector('.intro2-counter');
+        gsap.to(counterObj, {
+            v: 100, duration: 1.55, ease: 'power2.inOut',
+            onUpdate: () => { counterEl.textContent = String(Math.round(counterObj.v)).padStart(2, '0'); }
+        });
+    }
+
+
+    /* 1 - Masked headline reveal */
+    document.fonts.ready.then(() => {
+        const split = new SplitText('.hero-title', { type: 'lines,words', mask: 'lines' });
+        gsap.from(split.words, {
+            yPercent: 115,
+            duration: 1.1,
+            stagger: 0.07,
+            ease: 'power4.out',
+            delay: 2.05
+        });
+    });
+
+    /* 5 - Scramble-decode the eyebrow label */
+    gsap.to('.hero-kicker', {
+        duration: 1.1,
+        delay: 2.25,
+        scrambleText: { text: 'Sephora / price intelligence', chars: 'upperCase', speed: 0.55 }
+    });
+
+    /* 4 - Watermark depth drift */
+    gsap.utils.toArray('.parallax-word span').forEach((el, i) => {
+        gsap.to(el, {
+            y: [-60, -130, -200][i],
+            rotation: [-2, 1.5, -1.2][i],
+            ease: 'none',
+            scrollTrigger: { trigger: document.body, start: 'top top', end: 'bottom bottom', scrub: 1.2 }
+        });
+    });
+
+
+    /* magnetic buttons */
+    document.querySelectorAll('.btn').forEach(btn => {
+        btn.addEventListener('mousemove', (e) => {
+            const r = btn.getBoundingClientRect();
+            gsap.to(btn, { x: (e.clientX - r.left - r.width / 2) * 0.18, y: (e.clientY - r.top - r.height / 2) * 0.3, duration: 0.4, ease: 'power2.out' });
+        });
+        btn.addEventListener('mouseleave', () => {
+            gsap.to(btn, { x: 0, y: 0, duration: 0.8, ease: 'elastic.out(1, 0.4)' });
+        });
+    });
+    /* 6 - Infinite marquee */
+    gsap.to('.marquee-track', { xPercent: -50, repeat: -1, ease: 'none', duration: 22 });
+
+    /* Rows render after API data loads - watch for them, then animate */
+    function animateRows(container) {
+        const rows = container.querySelectorAll('.value-row:not(.gsap-done)');
+        if (!rows.length) return;
+        rows.forEach((row) => {
+            row.classList.add('gsap-done');
+
+            gsap.from(row, {
+                opacity: 0, y: 26, duration: 0.7, ease: 'power3.out',
+                scrollTrigger: { trigger: row, start: 'top 88%', once: true }
+            });
+
+            /* 3 - count-up prices */
+            row.querySelectorAll('.row-price-main, .row-fair').forEach(cell => {
+                const final = parseFloat(cell.textContent.replace(/[^0-9.]/g, ''));
+                if (isNaN(final)) return;
+                const obj = { v: 0 };
+                gsap.to(obj, {
+                    v: final, duration: 1.1, ease: 'power2.out',
+                    scrollTrigger: { trigger: row, start: 'top 88%', once: true },
+                    onUpdate: () => { cell.textContent = '$' + obj.v.toFixed(2); }
+                });
+            });
+
+            /* 2 - sparklines draw themselves */
+            const line = row.querySelector('.trend polyline');
+            if (line) {
+                gsap.from(line, {
+                    drawSVG: '0%', duration: 1.2, ease: 'power2.inOut',
+                    scrollTrigger: { trigger: row, start: 'top 88%', once: true },
+                    delay: 0.2
+                });
+            }
+
+            /* 7 - magnetic rows */
+            row.addEventListener('mousemove', (e) => {
+                const r = row.getBoundingClientRect();
+                const dx = (e.clientX - r.left - r.width / 2) / r.width;
+                const dy = (e.clientY - r.top - r.height / 2) / r.height;
+                gsap.to(row, { x: dx * 8, y: dy * 6, duration: 0.4, ease: 'power2.out' });
+            });
+            row.addEventListener('mouseleave', () => {
+                gsap.to(row, { x: 0, y: 0, duration: 0.9, ease: 'elastic.out(1, 0.45)' });
+            });
+        });
+
+        /* 5b - scramble the table headers */
+        container.querySelectorAll('.table-head span:not(.gsap-done)').forEach(h => {
+            h.classList.add('gsap-done');
+            const text = h.textContent;
+            gsap.to(h, { duration: 0.8, scrambleText: { text, chars: 'upperCase', speed: 0.6 } });
+        });
+    }
+
+    ['most-loved-list', 'best-value-list', 'lookup-output'].forEach(id => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        new MutationObserver(() => animateRows(el)).observe(el, { childList: true });
+    });
+})();
+</script>
+<script type="module">
+import { Client } from "https://cdn.jsdelivr.net/npm/@gradio/client/dist/index.min.js";
+
+const SPACE_ID = "siyadixit/sephora-pricing-model";
+let client = null;
+let allProducts = [];
+
+async function getClient() {
+    if (!client) client = await Client.connect(SPACE_ID);
+    return client;
+}
+
+const revealObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) entry.target.classList.add('visible');
+    });
+}, { threshold: 0.1 });
+document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+
+const parallaxWord = document.querySelector('.parallax-word');
+const parallaxRule = document.querySelector('.parallax-rule');
+let parallaxFrame = null;
+function updateParallax() {
+    parallaxFrame = null;
+    const scrollY = window.scrollY;
+    parallaxWord.style.setProperty('--parallax-y', `${scrollY * -0.16}px`);
+    parallaxRule.style.setProperty('--parallax-rule-y', `${scrollY * 0.08}px`);
+}
+if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    window.addEventListener('scroll', () => {
+        if (!parallaxFrame) parallaxFrame = requestAnimationFrame(updateParallax);
+    }, { passive: true });
+    updateParallax();
+}
+
+function formatCount(n) {
+    if (n >= 1000000) return (n / 1000000).toFixed(1) + 'M';
+    if (n >= 1000) return (n / 1000).toFixed(1) + 'K';
+    return String(n);
+}
+
+function gapLabel(gapPct) {
+    if (gapPct > 20) return { cls: 'gap-over', text: `+${Math.round(gapPct)}% over` };
+    if (gapPct < -20) return { cls: 'gap-under', text: `${Math.round(Math.abs(gapPct))}% under` };
+    return { cls: 'gap-fair', text: 'Fair' };
+}
+
+function sephoraSearchUrl(product) {
+    return `https://www.sephora.com/search?keyword=${encodeURIComponent(`${product.brand} ${product.name}`)}`;
+}
+
+function searchProducts(query) {
+    const tokens = query.toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim().split(/\s+/).filter(Boolean);
+    return allProducts
+        .map(product => {
+            const name = product.name.toLowerCase();
+            const brand = product.brand.toLowerCase();
+            const searchable = `${brand} ${name}`.replace(/[^a-z0-9]+/g, ' ');
+            const matches = tokens.every(token => searchable.includes(token));
+            if (!matches) return null;
+            const score = (name.startsWith(tokens[0]) ? 30 : 0) + (brand.startsWith(tokens[0]) ? 15 : 0) + tokens.length * 5;
+            return { product, score };
+        })
+        .filter(Boolean)
+        .sort((a, b) => b.score - a.score || a.product.name.localeCompare(b.product.name))
+        .slice(0, 12)
+        .map(item => item.product);
+}
+
+function renderRowList(products, opts = {}) {
+    const tableHead = `
+        <div class="table-head" aria-hidden="true">
+            <span>Product</span><span>Category</span><span>Price</span>
+            <span>Est. fair</span><span>Value gap</span><span>Trend</span>
+        </div>`;
+    const rows = products.map(p => {
+        const gap = gapLabel(p.gap_pct);
+        const trendClass = p.gap_pct > 20 ? 'trend-up' : p.gap_pct < -20 ? 'trend-down' : 'trend-fair';
+        const trendPoints = p.gap_pct > 20 ? '0,19 18,16 36,17 54,9 74,4' : p.gap_pct < -20 ? '0,5 18,10 36,8 54,17 74,22' : '0,13 18,11 36,14 54,12 74,14';
+        const loves = opts.showLoves ? ` · ${formatCount(p.love)} loves` : '';
+        return `
+        <div class="value-row">
+            <div class="row-main">
+                <div class="row-name"><a href="${sephoraSearchUrl(p)}" target="_blank" rel="noopener noreferrer" title="View ${p.name} on Sephora">${p.name}</a></div>
+                <div class="row-meta">${p.brand}${loves}</div>
+            </div>
+            <div class="row-category">${p.category}</div>
+            <div class="row-price">
+                <div class="row-price-main">$${p.price.toFixed(2)}</div>
+            </div>
+            <div class="row-fair">$${p.predicted_price.toFixed(2)}</div>
+            <div class="row-gap ${gap.cls}">${gap.text}</div>
+            <svg class="trend ${trendClass}" viewBox="0 0 74 26" aria-label="${gap.text} trend" role="img"><polyline points="${trendPoints}"></polyline></svg>
+        </div>`;
+    }).join('');
+    return tableHead + rows;
+}
+
+async function loadMostLoved() {
+    const c = await getClient();
+    const result = await c.predict("/most_loved", { n: 8 });
+    document.getElementById('most-loved-list').innerHTML = renderRowList(result.data[0], { showLoves: true });
+}
+
+async function loadBestValue() {
+    const c = await getClient();
+    const result = await c.predict("/best_value", { n: 8, min_rating: 4.0 });
+    document.getElementById('best-value-list').innerHTML = renderRowList(result.data[0], { showLoves: false });
+}
+
+async function loadAllProducts() {
+    const c = await getClient();
+    const result = await c.predict("/all_products", {});
+    allProducts = result.data[0];
+}
+
+function setupSearch() {
+    const input = document.getElementById('lookup-search');
+    const resultsBox = document.getElementById('lookup-results');
+
+    input.addEventListener('input', () => {
+        const q = input.value.trim();
+        if (q.length < 2) { resultsBox.classList.remove('open'); return; }
+        const matches = searchProducts(q);
+
+        resultsBox.innerHTML = matches.length === 0
+            ? '<div class="search-result-item">No matches</div>'
+            : matches.map(p => `
+                <div class="search-result-item" data-brand="${p.brand.replace(/"/g, '&quot;')}" data-name="${p.name.replace(/"/g, '&quot;')}">
+                    <div class="sr-brand">${p.brand}</div>
+                    ${p.name} — $${p.price.toFixed(2)}
+                </div>`).join('');
+        resultsBox.classList.add('open');
+
+        resultsBox.querySelectorAll('.search-result-item').forEach(item => {
+            item.addEventListener('click', async () => {
+                const brand = item.getAttribute('data-brand');
+                const name = item.getAttribute('data-name');
+                resultsBox.classList.remove('open');
+                input.value = `${brand} — ${name}`;
+                if (brand && name) {
+                    const c = await getClient();
+                    const result = await c.predict("/lookup_product", { brand, name });
+                    const p = result.data[0];
+                    document.getElementById('lookup-output').innerHTML = p.error
+                        ? '<div class="empty-note">Product not found.</div>'
+                        : `<div class="row-list">${renderRowList([p], { showLoves: true })}</div>`;
+                }
+            });
+        });
+    });
+
+    document.addEventListener('click', (e) => {
+        if (!input.contains(e.target) && !resultsBox.contains(e.target)) {
+            resultsBox.classList.remove('open');
+        }
+    });
+}
+
+async function init() {
+    await loadAllProducts();
+    setupSearch();
+    await Promise.all([loadMostLoved(), loadBestValue()]);
+}
+
+init();
+</script>
 
 </body>
 </html>
